@@ -1,0 +1,31 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Load data of half RTT matrix
+%% negative elements are missing data.
+% X = load('matrix.txt');
+X = load('p2psim_matrix.txt');
+% X = load('meridian_matrix.txt');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% decentralized matrix factorization on One-way delay matrix
+params.lambda = 50;%regularization coeffienct of coordinate
+paraams.dimension = 10;%number of dimensions
+params.maxIters = 50;
+params.inRandomOrder = 1;
+params.doReport = 1;
+params.showUV = 1;
+
+k = 32;%number of neighbors of each node
+W = generateW(X,k);%each node randomly selects k neighbors
+
+[U,V,err,mae,Uall,Vall] = dmf(X, W, params);
+Xhat = U*V';
+
+%% CDF REE
+figure,plot_reeCDF(X,Xhat,'r');
+xlim([0,5]);
+
+%% stress
+figure,plot(err,'r');
+
+%% mae
+figure,plot(mae,'r');
